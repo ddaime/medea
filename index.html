@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>განსაკუთრებული შეკითხვა</title>
+    <title>For Medea</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         body {
             display: flex;
@@ -12,47 +13,91 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #fdf2f2;
+            background: linear-gradient(135deg, #fdf2f2 0%, #ffdef2 100%);
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             text-align: center;
             overflow: hidden;
         }
-        .card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 400px; width: 90%; }
-        h1 { color: #b91c1c; font-size: 1.8rem; margin-bottom: 20px; }
+        .heart {
+            position: absolute;
+            color: rgba(185, 28, 28, 0.2);
+            font-size: 20px;
+            animation: float 6s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+        .card { 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(10px);
+            padding: 2.5rem; 
+            border-radius: 30px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+            max-width: 450px; 
+            width: 90%; 
+            z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        h1 { color: #b91c1c; font-size: 1.8rem; margin-bottom: 15px; }
+        #subtext { color: #4b5563; min-height: 1.6em; line-height: 1.6; margin-bottom: 20px; }
         .btn-container { display: flex; justify-content: center; gap: 15px; margin-top: 20px; position: relative; min-height: 60px; }
-        button { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: 0.3s; }
-        #yesBtn { background-color: #ef4444; color: white; }
+        button { padding: 12px 25px; border: none; border-radius: 12px; cursor: pointer; font-size: 1rem; transition: 0.3s; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        #yesBtn { background-color: #ef4444; color: white; z-index: 11; }
         #noBtn { background-color: #9ca3af; color: white; position: absolute; }
-        img { width: 100%; border-radius: 15px; margin-bottom: 15px; }
-        p { color: #4b5563; line-height: 1.5; }
+        .maps-btn { background-color: #34a853; color: white; margin-top: 15px; display: inline-block; text-decoration: none; padding: 10px 20px; border-radius: 10px; font-size: 0.9rem; }
+        input { padding: 15px; border: 2px solid #eee; border-radius: 15px; margin-bottom: 15px; width: 80%; text-align: center; font-size: 1.1rem; outline: none; transition: 0.3s; }
+        input:focus { border-color: #ef4444; background: white; }
+        img { width: 100%; max-width: 300px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="card" id="mainCard">
-        <img id="stageImg" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHJueGZ3bmpxYm9pZzRreHpjY3RreHpjY3RreHpjY3RreHpjYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MDJ9IbxxvDUQM/giphy.gif">
-        <h1 id="headline">გამარჯობა, მედეა ❤️</h1>
-        <p id="subtext">ერთი წამით მოცლი? რაღაც უნდა გკითხო...</p>
+    <audio id="bgMusic" loop>
+        <source src="https://8000vintages.ge/glovosync/mzz.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="card" id="passwordCard">
+        <h1>მედეას</h1>
+        <p>თუ გახსოვს, გახსნი.</p>
+        <input type="password" id="passInput" placeholder="პაროლი არის...">
+        <br>
+        <button id="authBtn" style="background-color: #b91c1c; color: white; width: 80%;">გახსენი ჩემი გულის კარი ❤️</button>
+        <p id="errorMsg" style="color: red; font-size: 0.8rem; margin-top: 10px;" class="hidden">ჰმმ, მჯერა შენი 😊</p>
+    </div>
+
+    <div class="card hidden" id="mainCard">
+        <img id="stageImg" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3eWNzZjI1a2NmMzdydTdrcnl0Mm43MDAzbHQxOGQ3NnQ3NWd3bXE5ZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/5D1NCyEKJTQRqSws8p/giphy.gif">
+        <h1 id="headline">გამარჯობა, მედეა 💙</h1>
+        <p id="subtext"></p>
         
         <div class="btn-container">
-            <button id="yesBtn">რა ხდება?</button>
-            <button id="noBtn">არა, დაკავებული ვარ</button>
+            <button id="yesBtn">ჰოო...</button>
+            <button id="noBtn">არა</button>
         </div>
     </div>
 
     <script>
         const stages = [
             {
-                headline: "იცი რა დღე მოდის? 😊",
-                subtext: "კალენდარში 14 თებერვალი მიჩვენებს, რომ რაღაც ძალიან მნიშვნელოვანია დაგეგმილი...",
-                btnText: "რა არის?",
-                img: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eHByZzR0bm93dzR5eXp6ZzR5eXp6ZzR5eXp6ZzR5eXp6ZzR5JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/KZTv7vL2cRE0G8x301/giphy.gif"
+                headline: "ყოველ დღე შენზე ვფიქრობ",
+                subtext: "და ჩემი ვალენტინი ხარ აწ და მარადის...",
+                btnText: "ჰოო...",
+                img: "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3d2Zoendsemw2NjV6dTJuemxrNnE0aDUxdWFuNncwOTdwMHNxMGF6NCZlcD12MV9naWZzX3JlbGF0ZWQmY3Q9Zw/9nMVSPZc2Xn6NoK7CU/giphy.gif"
             },
             {
-                headline: "გახდები ჩემი ვალენტინი? ❤️",
-                subtext: "8000 ვინტაჟში საუკეთესო ღვინოს შევარჩევ და საღამოს ერთად გავატარებთ...",
-                btnText: "კი, სიამოვნებით!",
-                img: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eHByZzR0bm93dzR5eXp6ZzR5eXp6ZzR5eXp6ZzR5eXp6ZzR5JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/l0HlSshT8P7L86v5K/giphy.gif"
+                headline: "ჰოდა შაბათს ოთხზე გამოგივლი",
+                subtext: "ერთად ვივახშმოთ ✨",
+                btnText: "აქაც, ჰოო...",
+                img: "https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZmtvcnzuN2lhYmxyenZsOGM0amFxam85Y2FlbGVsNmM2bDg3bGY4YSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Axs3H70Psn8nIyaL63/giphy.gif"
+            },
+            {
+                headline: "ტაქსით მოვალ, მანქანამ ჯერ არ მოვდივარო!",
+                subtext: "დროებით და მიყვარხარ",
+                btnText: "მეც მიყვარხარ დავით!",
+                img: "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjd5bmllYXlzeHJhNmh1b3p1Y2dyZmYxM2YyNHZzcXh4aDR2OWtvYSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/uakdGGShmMS0KYfTgp/giphy.gif"
             }
         ];
 
@@ -62,15 +107,35 @@
         const headline = document.getElementById('headline');
         const subtext = document.getElementById('subtext');
         const stageImg = document.getElementById('stageImg');
+        const bgMusic = document.getElementById('bgMusic');
         let yesScale = 1;
 
+        function typeWriter(text, i, cb) {
+            if (i < text.length) {
+                subtext.innerHTML = text.substring(0, i + 1);
+                setTimeout(() => typeWriter(text, i + 1, cb), 50);
+            } else if (cb) cb();
+        }
+
+        document.getElementById('authBtn').addEventListener('click', () => {
+            if (document.getElementById('passInput').value.toLowerCase() === 'medeas') {
+                document.getElementById('passwordCard').classList.add('hidden');
+                document.getElementById('mainCard').classList.remove('hidden');
+                bgMusic.play();
+                createHearts();
+                typeWriter("დიდი ხანია შენთვის მინდოდა მეთქვა...", 0);
+            } else {
+                document.getElementById('errorMsg').classList.remove('hidden');
+            }
+        });
+
         noBtn.addEventListener('mouseover', () => {
+            stageImg.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGk0MGxwOHBmODZkbHVmMHViNmphcWtiZzhpNThzZGZ0NmhkNXdoZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Q9yOCHupg1mqrXhfAZ/giphy.gif";
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
             const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
             noBtn.style.left = `${x}px`;
             noBtn.style.top = `${y}px`;
-            
-            yesScale += 0.15;
+            yesScale += 0.2;
             yesBtn.style.transform = `scale(${yesScale})`;
         });
 
@@ -78,28 +143,42 @@
             if (currentStage < stages.length) {
                 const stage = stages[currentStage];
                 headline.innerText = stage.headline;
-                subtext.innerText = stage.subtext;
                 yesBtn.innerText = stage.btnText;
                 stageImg.src = stage.img;
+                typeWriter(stage.subtext, 0);
                 
-                // Reset "No" button position and Yes scale for the next question
                 noBtn.style.position = 'absolute';
                 noBtn.style.left = 'auto';
                 noBtn.style.top = 'auto';
                 yesScale = 1;
                 yesBtn.style.transform = `scale(1)`;
-                
                 currentStage++;
             } else {
+                confetti();
                 document.getElementById('mainCard').innerHTML = `
-                    <h1>შევთანხმდით! 🥰</h1>
-                    <p>ლოკაცია: 8000 ვინტაჟი 🍷</p>
-                    <p>დრო: 14 თებერვალი</p>
-                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eHByZzR0bm93dzR5eXp6ZzR5eXp6ZzR5eXp6ZzR5eXp6ZzR5JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/KZTv7vL2cRE0G8x301/giphy.gif">
-                    <p style="font-size: 0.8rem; color: gray;">// commit -m "relationship updated"</p>
+                    <h1>დროებით მედიკო 🥰</h1>
+                    <p>შევხვდებით შაბათს!</p>
+                    <img id="finalGif" src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NjZoNDlvNHQ3dndwc2tmYjV0ejdtNHR3NjdwMDV5emtiNWhxYWV6aCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/eee5u0TOV9sLXBZpiJ/giphy.gif">
+                    <br>
+                    <a href="https://maps.app.goo.gl/tH7q6Lp8qV8Qv6W8A" target="_blank" class="maps-btn">📍 See360 Restaurant</a>
+                    <p style="font-size: 0.7rem; color: gray; margin-top: 20px;"><3 <3 <3></p>
                 `;
+                setTimeout(() => { document.getElementById('finalGif').src = "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3OGloZTM1cHN1b29hZ3VnOXQ0Ym01bTVjNmtya2tpdWx0dTVlc2Q4byZlcD12MV9naWZzX3NlYXJjaCZjdD1n/AJAJgW9zDUhOZz9HRM/giphy.gif"; }, 5000);
+                setTimeout(() => { document.getElementById('finalGif').src = "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3bm5ybmFvZjZ4ODFjMG54NHB5cWZjN2VuYmZkeTYyd2FranFmajFkcCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/nN1EcdaJgv7liAvgx9/giphy.gif"; }, 10000);
             }
         });
+
+        function createHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                document.body.appendChild(heart);
+                setTimeout(() => { heart.remove(); }, 6000);
+            }, 600);
+        }
     </script>
 </body>
 </html>
